@@ -37,6 +37,7 @@ make clean
 
 # Build the program
 if make; then
+    mkdir -p ~/.config/systemd/user
     cp vaani.service ~/.config/systemd/user/vaani.service
     systemctl --user daemon-reload
     systemctl --user enable vaani.service

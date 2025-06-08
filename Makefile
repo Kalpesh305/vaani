@@ -1,4 +1,5 @@
-VOSK_DIR = ./vosk-linux-aarch64-0.3.45
+CUR_DIR = $(shell pwd)
+VOSK_DIR = $(CUR_DIR)/vosk-linux-aarch64-0.3.45
 
 CC = gcc
 CFLAGS = -Wall -Wextra -I./include -I./

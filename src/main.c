@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 #include "../include/speech_processor.h"
 #include "../include/intent_processor.h"
 

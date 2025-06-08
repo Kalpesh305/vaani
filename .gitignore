@@ -1,0 +1,32 @@
+# Compiled binaries
+vaani
+*.o
+
+# Build directory
+build/
+
+# Vosk model directories (avoid committing large model files)
+vosk-model/
+vosk-model-*/
+
+# Vosk library extracted directories (but keep the zip files)
+vosk-linux-aarch64-*/
+
+# Model zip downloads (but keep the library zip)
+vosk-model-*.zip
+
+# Temporary files
+*.tmp
+*~
+
+# IDE files
+.vscode/
+*.swp
+*.swo
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log 

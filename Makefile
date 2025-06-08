@@ -1,6 +1,8 @@
+VOSK_DIR = ./vosk-linux-aarch64-0.3.45
+
 CC = gcc
-CFLAGS = -Wall -Wextra -I./include
-LDFLAGS = -lasound -lvosk -lm
+CFLAGS = -Wall -Wextra -I./include -I./
+LDFLAGS = -L$(VOSK_DIR) -Wl,-rpath=$(VOSK_DIR) -lasound -lvosk -lm
 
 SRC_DIR = src
 BUILD_DIR = build
@@ -31,4 +33,4 @@ clean:
 	rm -rf $(BUILD_DIR) $(TARGET)
 
 run: $(TARGET)
-	./$(TARGET) 
+	./$(TARGET)

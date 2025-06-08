@@ -1,0 +1,13 @@
+[Unit]
+Description=Vaani Speech Assistant
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/home/raspberrypi/vaani/vaani
+WorkingDirectory=/home/raspberrypi/vaani
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target 

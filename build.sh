@@ -37,6 +37,10 @@ make clean
 
 # Build the program
 if make; then
+    cp vaani.service ~/.config/systemd/user/vaani.service
+    systemctl --user daemon-reload
+    systemctl --user enable vaani.service
+    loginctl enable-linger $USER
     echo -e "\n${GREEN}Build successful!${NC}"
     exit 0
 else

@@ -7,6 +7,84 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
+# Function to check if a package is installed
+is_package_installed() {
+    dpkg -l | grep -q "^ii  $1 "
+}
+
+# Function to check if Python package is installed
+is_python_package_installed() {
+    python3 -c "import $1" 2>/dev/null
+}
+
+# Function to install system packages
+install_system_packages() {
+    echo -e "${BLUE}Checking and installing required system packages...${NC}"
+    
+    local packages=("gcc" "libasound2-dev" "festival" "wget" "unzip")
+    local packages_to_install=()
+    
+    # Check which packages need to be installed
+    for package in "${packages[@]}"; do
+        if is_package_installed "$package"; then
+            echo -e "${GREEN}✓ $package is already installed${NC}"
+        else
+            echo -e "${YELLOW}⚬ $package needs to be installed${NC}"
+            packages_to_install+=("$package")
+        fi
+    done
+    
+    # Install packages if needed
+    if [ ${#packages_to_install[@]} -gt 0 ]; then
+        echo -e "${BLUE}Installing missing packages: ${packages_to_install[*]}${NC}"
+        
+        # Update package list
+        echo -e "${YELLOW}Updating package list...${NC}"
+        sudo apt-get update
+        if [ $? -ne 0 ]; then
+            echo -e "${RED}Failed to update package list${NC}"
+            return 1
+        fi
+        
+        # Install missing packages
+        echo -e "${YELLOW}Installing packages...${NC}"
+        sudo apt-get install -y "${packages_to_install[@]}"
+        if [ $? -eq 0 ]; then
+            echo -e "${GREEN}✓ Successfully installed missing packages${NC}"
+        else
+            echo -e "${RED}✗ Failed to install some packages${NC}"
+            return 1
+        fi
+    else
+        echo -e "${GREEN}✓ All required system packages are already installed${NC}"
+    fi
+    
+    return 0
+}
+
+# Function to install Python packages
+install_python_packages() {
+    echo -e "${BLUE}Checking and installing required Python packages...${NC}"
+    
+    # Check if vosk is installed
+    if is_python_package_installed "vosk"; then
+        echo -e "${GREEN}✓ vosk Python package is already installed${NC}"
+    else
+        echo -e "${YELLOW}⚬ vosk Python package needs to be installed${NC}"
+        echo -e "${BLUE}Installing vosk Python package...${NC}"
+        
+        sudo pip3 install vosk
+        if [ $? -eq 0 ]; then
+            echo -e "${GREEN}✓ Successfully installed vosk Python package${NC}"
+        else
+            echo -e "${RED}✗ Failed to install vosk Python package${NC}"
+            return 1
+        fi
+    fi
+    
+    return 0
+}
+
 # Model information
 MODEL_NAME="vosk-model-en-in-0.5"
 MODEL_URL="https://alphacephei.com/vosk/models/${MODEL_NAME}.zip"
@@ -152,6 +230,22 @@ check_existing_model() {
 main() {
     echo -e "${BLUE}=== Vosk Model Setup Script ===${NC}"
     echo
+    
+    # Install required packages first
+    echo -e "${BLUE}Step 1: Installing required packages${NC}"
+    if ! install_system_packages; then
+        echo -e "${RED}Failed to install required system packages${NC}"
+        exit 1
+    fi
+    
+    echo
+    if ! install_python_packages; then
+        echo -e "${RED}Failed to install required Python packages${NC}"
+        exit 1
+    fi
+    
+    echo
+    echo -e "${BLUE}Step 2: Setting up Vosk model${NC}"
     
     # Check if model already exists
     if check_existing_model; then

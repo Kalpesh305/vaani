@@ -2,7 +2,7 @@ CUR_DIR = $(shell pwd)
 VOSK_DIR = $(CUR_DIR)/vosk-linux-aarch64-0.3.45
 
 CC = gcc
-CFLAGS = -Wall -Wextra -I./include -I./
+CFLAGS = -Wall -Wextra -I./include -I./ -I$(VOSK_DIR)
 LDFLAGS = -L$(VOSK_DIR) -Wl,-rpath=$(VOSK_DIR) -lasound -lvosk -lm
 
 SRC_DIR = src

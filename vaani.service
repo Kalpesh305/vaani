@@ -4,8 +4,8 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=/home/raspberrypi/vaani/vaani
-WorkingDirectory=/home/raspberrypi/vaani
+ExecStart=/home/$USER/vaani/vaani
+WorkingDirectory=/home/$USER/vaani
 Restart=on-failure
 RestartSec=5
 

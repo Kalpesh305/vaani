@@ -42,6 +42,7 @@ if make; then
     systemctl --user daemon-reload
     systemctl --user enable vaani.service
     loginctl enable-linger $USER
+    systemctl --user start vaani.service
     echo -e "\n${GREEN}Build successful!${NC}"
     exit 0
 else

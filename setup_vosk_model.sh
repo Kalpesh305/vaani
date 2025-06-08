@@ -21,7 +21,7 @@ is_python_package_installed() {
 install_system_packages() {
     echo -e "${BLUE}Checking and installing required system packages...${NC}"
     
-    local packages=("gcc" "libasound2-dev" "festival" "wget" "unzip")
+    local packages=("gcc" "libasound2-dev" "festival" "wget" "unzip" "festvox-us-slt-hts" "festvox-kallpc16k" "festvox-rablpc16k")
     local packages_to_install=()
     
     # Check which packages need to be installed

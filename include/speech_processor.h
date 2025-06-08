@@ -14,6 +14,15 @@
 #define SILENCE_THRESHOLD 500
 #define MAX_TEXT_LENGTH 1024
 
+// TTS Voice Configuration
+// Available female voices (recommended for clarity):
+// - "voice_rab_diphone" : Rachel voice (clear, natural)
+// - "voice_kal_diphone" : Kal voice (clear female)
+// - "voice_us2_mbrola"  : US2 MBROLA (high quality female)
+// - "voice_us3_mbrola"  : US3 MBROLA (alternative female)
+// - "voice_cmu_us_slt_arctic_hts" : CMU SLT Arctic (very clear, natural female)
+#define TTS_VOICE "voice_cmu_us_slt_arctic_hts"
+
 // Global Vosk model
 extern VoskModel *g_vosk_model;
 

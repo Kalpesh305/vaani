@@ -130,8 +130,10 @@ void text_to_speech(const char *text) {
     // Escape special characters in the text
     escape_text_for_festival(text, escaped_text, sizeof(escaped_text));
     
-    // Use Festival's --tts mode which is more reliable
-    snprintf(command, sizeof(command), "echo \"%s\" | festival --tts", escaped_text);
+    // Use Festival with configurable female voice (defined in speech_processor.h)
+    // To change voice: modify TTS_VOICE constant in include/speech_processor.h
+    snprintf(command, sizeof(command), 
+             "echo '(%s) (SayText \"%s\")' | festival", TTS_VOICE, escaped_text);
     system(command);
 }
 

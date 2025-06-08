@@ -73,13 +73,13 @@ install_python_packages() {
         echo -e "${YELLOW}⚬ vosk Python package needs to be installed${NC}"
         echo -e "${BLUE}Installing vosk Python package...${NC}"
         
-        sudo pip3 install vosk
-        if [ $? -eq 0 ]; then
-            echo -e "${GREEN}✓ Successfully installed vosk Python package${NC}"
-        else
-            echo -e "${RED}✗ Failed to install vosk Python package${NC}"
-            return 1
-        fi
+        # sudo pip3 install vosk
+        # if [ $? -eq 0 ]; then
+        #     echo -e "${GREEN}✓ Successfully installed vosk Python package${NC}"
+        # else
+        #     echo -e "${RED}✗ Failed to install vosk Python package${NC}"
+        #     return 1
+        # fi
     fi
     
     return 0

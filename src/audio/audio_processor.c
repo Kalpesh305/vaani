@@ -1,7 +1,83 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <alsa/asoundlib.h>
 #include "../../include/speech_processor.h"
+
+// Function to find USB audio device automatically
+char* find_usb_audio_device(void) {
+    FILE *cards_file;
+    char line[256];
+    int card_num = -1;
+    static char device_name[32];
+    
+    // Read /proc/asound/cards to find USB audio devices
+    cards_file = fopen("/proc/asound/cards", "r");
+    if (!cards_file) {
+        fprintf(stderr, "Cannot open /proc/asound/cards\n");
+        return NULL;
+    }
+    
+    printf("Searching for USB audio devices...\n");
+    
+    while (fgets(line, sizeof(line), cards_file)) {
+        // Look for lines containing card numbers and USB-Audio driver
+        if (strstr(line, "USB-Audio") != NULL) {
+            // Extract card number from the beginning of the line
+            if (sscanf(line, " %d [", &card_num) == 1) {
+                fclose(cards_file);
+                snprintf(device_name, sizeof(device_name), "plughw:%d,0", card_num);
+                printf("Found USB audio device: %s\n", device_name);
+                return device_name;
+            }
+        }
+    }
+    
+    fclose(cards_file);
+    
+    // If no USB audio device found, try to find any capture device
+    printf("No USB audio device found, searching for any capture device...\n");
+    
+    snd_ctl_t *handle;
+    snd_ctl_card_info_t *info;
+    snd_pcm_info_t *pcminfo;
+    char card_id[32];
+    
+    snd_ctl_card_info_alloca(&info);
+    snd_pcm_info_alloca(&pcminfo);
+    
+    // Try each card
+    for (int card = 0; card < 8; card++) {
+        snprintf(card_id, sizeof(card_id), "hw:%d", card);
+        
+        if (snd_ctl_open(&handle, card_id, 0) < 0) {
+            continue;
+        }
+        
+        if (snd_ctl_card_info(handle, info) < 0) {
+            snd_ctl_close(handle);
+            continue;
+        }
+        
+        // Check if card has capture capability
+        int device = 0;
+        snd_pcm_info_set_device(pcminfo, device);
+        snd_pcm_info_set_subdevice(pcminfo, 0);
+        snd_pcm_info_set_stream(pcminfo, SND_PCM_STREAM_CAPTURE);
+        
+        if (snd_ctl_pcm_info(handle, pcminfo) >= 0) {
+            snd_ctl_close(handle);
+            snprintf(device_name, sizeof(device_name), "plughw:%d,0", card);
+            printf("Found capture device: %s (%s)\n", device_name, snd_ctl_card_info_get_name(info));
+            return device_name;
+        }
+        
+        snd_ctl_close(handle);
+    }
+    
+    fprintf(stderr, "No suitable audio capture device found\n");
+    return NULL;
+}
 
 void normalize_audio(int16_t *buffer, size_t samples) {
     // Find maximum amplitude
@@ -56,9 +132,17 @@ int16_t *record_audio(size_t *out_nsamps) {
         return NULL;
     }
 
+    // Automatically find USB audio device
+    char* audio_device = find_usb_audio_device();
+    if (!audio_device) {
+        fprintf(stderr, "No suitable audio device found\n");
+        free(buffer);
+        return NULL;
+    }
+
     // Open the audio device
-    if ((err = snd_pcm_open(&capture_handle, AUDIO_DEVICE, SND_PCM_STREAM_CAPTURE, 0)) < 0) {
-        fprintf(stderr, "Cannot open audio device %s: %s\n", AUDIO_DEVICE, snd_strerror(err));
+    if ((err = snd_pcm_open(&capture_handle, audio_device, SND_PCM_STREAM_CAPTURE, 0)) < 0) {
+        fprintf(stderr, "Cannot open audio device %s: %s\n", audio_device, snd_strerror(err));
         free(buffer);
         return NULL;
     }

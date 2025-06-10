@@ -8,7 +8,6 @@
 // Constants
 #define SAMPLE_RATE 16000
 #define RECORDING_TIME_SEC 5
-#define AUDIO_DEVICE "plughw:3,0"
 #define FRAME_SIZE 8000
 #define BUFFER_SIZE (SAMPLE_RATE * RECORDING_TIME_SEC)
 #define SILENCE_THRESHOLD 500
@@ -38,6 +37,7 @@ void text_to_speech(const char *text);
 const char* speech_to_text(void);
 
 // Function declarations for audio processing
+char* find_usb_audio_device(void);
 int16_t *record_audio(size_t *out_nsamps);
 void normalize_audio(int16_t *buffer, size_t samples);
 void remove_dc_offset(int16_t *buffer, size_t samples);
